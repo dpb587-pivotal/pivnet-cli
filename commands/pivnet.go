@@ -35,6 +35,7 @@ type Filterer interface {
 type RCHandler interface {
 	SaveProfile(profileName string, apiToken string, host string) error
 	ProfileForName(profileName string) (*rc.PivnetProfile, error)
+	RemoveProfileWithName(profileName string) error
 }
 
 var (

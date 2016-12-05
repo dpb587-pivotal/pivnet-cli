@@ -67,7 +67,8 @@ func (h *RCHandler) SaveProfile(
 	return h.writePivnetRC(h.configFilepath, *pivnetRC)
 }
 
-// ProfileForName will return (nil,nil) if the file does not exist
+// ProfileForName will return (nil,nil) if the file does not exist,
+// or if the profile does not exist,
 // but will return (nil,err) for other reasons e.g. the file cannot be read.
 func (h *RCHandler) ProfileForName(profileName string) (*PivnetProfile, error) {
 	pivnetRC, err := h.loadPivnetRC()
@@ -86,6 +87,29 @@ func (h *RCHandler) ProfileForName(profileName string) (*PivnetProfile, error) {
 	}
 
 	return nil, nil
+}
+
+// RemoveProfileWithName will return error for all errors
+func (h *RCHandler) RemoveProfileWithName(profileName string) error {
+	pivnetRC, err := h.loadPivnetRC()
+	if err != nil {
+		return err
+	}
+
+	if pivnetRC == nil {
+		return nil
+	}
+
+	var foundIndex int
+	for i, p := range pivnetRC.Profiles {
+		if p.Name == profileName {
+			foundIndex = i
+		}
+	}
+
+	pivnetRC.Profiles = append(pivnetRC.Profiles[:foundIndex], pivnetRC.Profiles[foundIndex+1:]...)
+
+	return h.writePivnetRC(h.configFilepath, *pivnetRC)
 }
 
 // loadPivnetRC does not return an error if the file does not exist
